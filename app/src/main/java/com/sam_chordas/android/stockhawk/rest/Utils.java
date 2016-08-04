@@ -2,12 +2,19 @@ package com.sam_chordas.android.stockhawk.rest;
 
 import android.content.ContentProviderOperation;
 import android.util.Log;
+
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
-import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by sam_chordas on 10/8/15.
@@ -92,4 +99,22 @@ public class Utils {
     }
     return builder.build();
   }
+
+  public static final String DATE_FORMAT = "yyyy-MM-dd";
+
+  public static String getFormattedDate(long dateInMillis ) {
+    Locale localeUS = new Locale("en", "US");
+    SimpleDateFormat queryDayFormat = new SimpleDateFormat(DATE_FORMAT,localeUS);
+    return queryDayFormat.format(dateInMillis);
+  }
+
+  public static String getBackwardDate(Date date, int backDateType, int howMany)
+  {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(date);
+    cal.add(backDateType, howMany);
+
+    return getFormattedDate(cal.getTimeInMillis());
+  }
+
 }
