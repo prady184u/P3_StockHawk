@@ -35,6 +35,20 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DetailActivity extends AppCompatActivity implements Callback<QuoteInfo> {
 
+    public static final String SYMBOL = "symbol";
+    public static final String HTTPS_QUERY_YAHOOAPIS_COM_V1 = "https://query.yahooapis.com/v1/";
+    public static final String SELECT_FROM_YAHOO_FINANCE_HISTORICALDATA_WHERE_SYMBOL = "select * from yahoo.finance.historicaldata where symbol = \"";
+    public static final String AND_START_DATE = "\" and startDate = \"";
+    public static final String AND_END_DATE = "\" and endDate = \"";
+    public static final String SORT_FIELD_START_DATE_REVERSE = "\" |  sort(field=\"startDate\")  | reverse() ";
+    public static final String TRUE = "true";
+    public static final String STORE_DATATABLES_ORG_ALLTABLESWITHKEYS = "store://datatables.org/alltableswithkeys";
+    public static final String JSON = "json";
+    public static final String WEEK = "1 Week";
+    public static final String MONTH = "1 Month";
+    public static final String MONTHS = "6 Months";
+    public static final String YEAR = "1 Year";
+    public static final String SELECT_THE_STOCK_HISTORY_RANGE = "select the stock history range";
     private TextView textView;
     private String result;
     private ProgressBar pb;
@@ -49,7 +63,7 @@ public class DetailActivity extends AppCompatActivity implements Callback<QuoteI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        symbol = getIntent().getExtras().getString("symbol");
+        symbol = getIntent().getExtras().getString(SYMBOL);
         pb = (ProgressBar)findViewById(R.id.progressBar);
         getSupportActionBar().setTitle(symbol);
 
@@ -59,17 +73,17 @@ public class DetailActivity extends AppCompatActivity implements Callback<QuoteI
 
     private void callRetrofitFetch(String symbol, String startDate, String endDate) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://query.yahooapis.com/v1/")
+                .baseUrl(HTTPS_QUERY_YAHOOAPIS_COM_V1)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         // prepare call in Retrofit 2.0
         QuoteService stackOverflowAPI = retrofit.create(QuoteService.class);
         //Make sure we sort it based on correct date. Use sort
-         String q = "select * from yahoo.finance.historicaldata where symbol = \""+symbol+"\" and startDate = \""+endDate+"\" and endDate = \""+startDate+"\" |  sort(field=\"startDate\")  | reverse() ";
-        String diagnostics = "true";
-        String env = "store://datatables.org/alltableswithkeys";
-        String format = "json";
+         String q = SELECT_FROM_YAHOO_FINANCE_HISTORICALDATA_WHERE_SYMBOL +symbol+ AND_START_DATE +endDate+ AND_END_DATE +startDate+ SORT_FIELD_START_DATE_REVERSE;
+        String diagnostics = TRUE;
+        String env = STORE_DATATABLES_ORG_ALLTABLESWITHKEYS;
+        String format = JSON;
         Call<QuoteInfo> call = stackOverflowAPI.getObjectWithNestedArraysAndObject(q,diagnostics,env,format);
 
         //asynchronous call
@@ -131,16 +145,16 @@ public class DetailActivity extends AppCompatActivity implements Callback<QuoteI
                 Date date = new Date();
                 switch (item)
                 {
-                    case "1 Week":
+                    case WEEK:
                         callRetrofitFetch(symbol,startDate,Utils.getBackwardDate(date, Calendar.DATE, -7));
                         break;
-                    case "1 Month":
+                    case MONTH:
                         callRetrofitFetch(symbol,startDate,Utils.getBackwardDate(date, Calendar.MONTH, -1));
                         break;
-                    case "6 Months":
+                    case MONTHS:
                         callRetrofitFetch(symbol,startDate,Utils.getBackwardDate(date, Calendar.MONTH, -6));
                         break;
-                    case "1 Year":
+                    case YEAR:
                         callRetrofitFetch(symbol,startDate,Utils.getBackwardDate(date, Calendar.YEAR, -1));
                         break;
 
@@ -150,7 +164,7 @@ public class DetailActivity extends AppCompatActivity implements Callback<QuoteI
 
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
-                Toast.makeText(DetailActivity.this, "select the stock history range",Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailActivity.this, SELECT_THE_STOCK_HISTORY_RANGE,Toast.LENGTH_SHORT).show();
 
             }
         });
